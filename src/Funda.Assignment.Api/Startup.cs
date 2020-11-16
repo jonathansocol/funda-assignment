@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Funda.Assignment.Application.Interfaces;
 using Funda.Assignment.Application.Services;
 using Funda.Assignment.Infrastructure.Handlers;
@@ -7,10 +8,10 @@ using Funda.Assignment.Infrastructure.Services;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Funda.Assignment.Api
@@ -48,12 +49,22 @@ namespace Funda.Assignment.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseGlobalExceptionHandler(x => {
+                x.ContentType = "application/json";
+                x.ResponseBody(s => JsonConvert.SerializeObject(new
+                {
+                    Message = "An error occurred whilst processing your request"
+                }));
+                x.OnError((exception, httpContext) =>
+                {
+                    logger.LogError(exception.Message);
+                    return Task.CompletedTask;
+                });
+            });
+
+            app.Map("/error", x => x.Run(y => throw new Exception()));
 
             app.UseHttpsRedirection();
 
@@ -71,6 +82,7 @@ namespace Funda.Assignment.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
         }
     }
 }
