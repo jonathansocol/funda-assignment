@@ -52,9 +52,9 @@ namespace Funda.Assignment.Infrastructure.Handlers
 
             if (recordsDuringTimelapse.Count() == _maxRequests)
             {
-                var ts = recordsDuringTimelapse.Last() - recordsDuringTimelapse.First();
+                var duration = recordsDuringTimelapse.Last() - recordsDuringTimelapse.First();
 
-                await Task.Delay((int)ts.TotalMilliseconds);
+                await Task.Delay(_timelapse - (int)duration.TotalMilliseconds);
             }
         }
     }
