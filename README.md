@@ -33,7 +33,7 @@ The application implements an HttpMessageHandler that intercepts every call that
 This approach allowed me to take the last 100 calls, calculate the time elapsed between the first and the last record, and then add the remaining waiting time (in milliseconds), so the number of calls never exceed the limit.
 
 ### Scenario 2: The API key is shared across applications.
-In case the API key is shared across applications, the application implements an extra check into the FundaListingHttpClient.
+In case the API key is shared across different applications, this application will not be able to predict how many calls have been already done, so it implements an extra check into the FundaListingHttpClient.
 This extra check consists of a retry mechanism that is executed when a 401 (Unauthorized) status code is returned, and in case that occurs, it will wait 5 seconds and retry the operations.
 Due to the limited time for completing this assignment I didn't consider implementing an exit condition (what would happen if the API keeps returning 401 (Unauthorized) for hours?) but I took it into account.
 
