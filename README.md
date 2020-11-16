@@ -38,3 +38,11 @@ This extra check consists of a retry mechanism that is executed when a 401 (Unau
 Due to the limited time for completing this assignment I didn't consider implementing an exit condition (what would happen if the API keeps returning 401 (Unauthorized) for hours?) but I took it into account.
 
 All settings including API URL, API Key and request rate limitations are configurable from the appsettings.json file into the Api project.
+
+## Extra
+While coding the application I realized there is what seems to be a bug in the Funda Partner API.
+When sending a pagination parameter of 100, the API ignores it and sends back only 25 because that is the limit; however, the pagination information returned as part of the response is calculated based on the 100 records sent as a parameter and not the 25 returned due to the limit.
+
+For example:
+- I send 25 as page size, I receive 25 records and 4 as total pages
+- I send 100 as page size, I receive only 25 records but 1 as total pages
